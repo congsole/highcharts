@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+.cell {
+  display: flex;
+  flex-direction: column;
+}
+.chart {
+  padding: 15px;
+  margin: 15px;
+  border: 1px solid lightgrey;
+}
+.highcharts-title,
+.highcharts-dashboards-component-title {
+  font-weight: bold;
+  font-size: 25px !important;
+}
+.custom-kpi .custom-kpi-value {
+  order: 2; /* 기본 제목 아래로 */
+  display: flex;
+  flex-direction: row;
+}
+.custom-kpi .highcharts-dashboards-component-subtitle {
+  order: 1; /* 서브타이틀 위로 */
+}
+.custom-kpi-content {
+  display: flex;
+  flex-direction: column; /* 수직 정렬 */
+  background-color: #f1f1f1;
+  border-radius: 30px;
+  padding: 20px !important;
+}
+.attract-arpu-value {
+  font-size: 70px;
+}
+.attract-arpu-subtitle {
+  font-weight: bold;
+  color: dodgerblue;
+}
+.custom-kpi-content p {
+  display: block !important;
+}
+.highcharts-background {
+  background-color: transparent !important;
+  fill: transparent !important;
+  height: 200px !important;
+}
+.highcharts-dashboards-row {
+  display: flex !important;
+  flex-direction: row !important;
+}
+#dashboard .highcharts-title {
+  display: none;
+}
+#attract-arpu-chart {
+  margin-top: 50px;
+}
