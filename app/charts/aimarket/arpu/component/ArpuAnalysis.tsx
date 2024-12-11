@@ -39,9 +39,27 @@ const ArpuAnalysis: React.FC = () => {
                 rows: [
                     {
                         cells: [
+                            { id: 'arpu-dashboard-title' },
+                        ]
+                    },
+                    {
+                        cells: [
+                            { id: 'attract-arpu-title' },
+                        ]
+                    },
+                    {
+                        id: 'attract-arpu-wrapper',
+                        cells: [
                             { id: 'attract-arpu' }, // KPI
                             { id: 'attract-arpu-chart' } // Column Chart
                         ],
+                    },
+
+
+                    {
+                        cells: [
+                            { id: 'attract-arpu-by-join-type-title' },
+                        ]
                     },
                     {
                         cells: [
@@ -60,9 +78,19 @@ const ArpuAnalysis: React.FC = () => {
         },
         components: [
             {
+                cell: 'arpu-dashboard-title',
+                type: 'HTML',
+                title: '유치 ARPU 종합분석'
+            },
+            {
+                cell: 'attract-arpu-title',
+                type: 'HTML',
+                title: '유치 ARPU'
+            },
+            {
                 cell: 'attract-arpu',
                 type: 'KPI' as const,
-                title: '유치 ARPU',
+                title: null,
                 value: '<p><span class="attract-arpu-value">60,102</span> 원</p>',
                 subtitle: '<p>직전대비 <span class="attract-arpu-subtitle">-0.6%</span></p>',
                 className: 'custom-kpi',
@@ -107,8 +135,220 @@ const ArpuAnalysis: React.FC = () => {
                 },
             },
             {
+                cell: 'attract-arpu-by-join-type-title',
+                type: 'HTML',
+                title: '가입유형별 유치ARPU',
+            },
+            {
                 cell: 'attract-arpu-by-join-type-1',
+                type: 'Highcharts',
+                title: '',
+                chartOptions: {
+                    chart: {
+                        type: 'column',
+                        width: 390, // Width of the column chart
+                        height: 200, // Height of the column chart
+                    },
+                    xAxis: {
+                        labels: {
+                            enabled: true,
+                        },
+                        categories: ['010', 'MNP', '기변']
+                        // visible: false,
+                    },
+                    yAxis: {
+                        title: {
+                            text: null,
+                        },
+                        labels: {
+                            enabled: true,
+                        },
+                        endOnTick: false,
+                        startOnTick: false,
+                        tickPositions: [],
+                        max: 150000
+                    },
+                    legend: {
+                        enabled: false,
+                    },
+                    series: [{
+                        name: 'arpu',
+                        colorByPoint: true,
+                        data: [
+                            {
+                                name: '010',
+                                y: 33309,
+                            },
+                            {
+                                name: 'MNP',
+                                y: 40842,
+                            },
+                            {
+                                name: '기변',
+                                y: 71868,
+                            },
+                        ]
+                    }],
+                    plotOptions: {
+                        column: {
+                            dataLabels: {
+                                enabled: true,
+                                format: '{point.y}원',
+                            },
+                            pointWidth: 90,
+                        }
+                    }
+                },
+            },
+            {
+                cell: 'attract-arpu-by-join-type-2',
+                type: 'Highcharts',
+                title: '',
+                chartOptions: {
+                    chart: {
+                        type: 'column',
+                        width: 390, // Width of the column chart
+                        height: 200, // Height of the column chart
+                    },
+                    xAxis: {
+                        labels: {
+                            enabled: true,
+                        },
+                        categories: ['지원금약정', '선택약정',]
+                        // visible: false,
+                    },
+                    yAxis: {
+                        title: {
+                            text: null,
+                        },
+                        labels: {
+                            enabled: true,
+                        },
+                        endOnTick: false,
+                        startOnTick: false,
+                        tickPositions: [],
+                        max: 150000,
+                    },
+                    legend: {
+                        enabled: false,
+                    },
+                    series: [{
+                        name: 'arpu',
+                        colorByPoint: true,
+                        data: [
+                            {
+                                name: '지원금약정',
+                                y: 88806,
+                            },
+                            {
+                                name: '선택약정',
+                                y: 50259,
+                            },
+                        ]
+                    }],
+                    plotOptions: {
+                        column: {
+                            dataLabels: {
+                                enabled: true,
+                                format: '{point.y}원',
+                            },
+                            pointWidth: 90,
+                        }
+                    }
+                },
 
+            },
+            {
+                cell: 'average-attract-arpu-by-group',
+                type: 'Highcharts',
+                title: '조직별 평균유치 ARPU',
+                chartOptions: {
+                    chart: {
+                        type: 'bar',
+                        width: 390, // Width of the column chart
+                    },
+                    xAxis: {
+                        labels: {
+                            enabled: true,
+                        },
+                        categories: ['제휴마케팅본부', '제주', '중부', '기업사업본부', '서부', '수도권', 'PS&M', '대구', '부산', 'MNO AI마케팅',]
+                        // visible: false,
+                    },
+                    yAxis: {
+                        title: {
+                            text: null,
+                        },
+                        labels: {
+                            enabled: true,
+                        },
+                        endOnTick: false,
+                        tickPositions: [0, 50000],
+                        max: 80000,
+                    },
+                    legend: {
+                        enabled: false,
+                    },
+                    series: [{
+                        name: 'average-arpu-by-group',
+                        colorByPoint: false,
+                        data: [65091, 65091, 61181, 59158, 57000, 56900, 54000, 53000, 52000, 50000]
+                    }],
+                    plotOptions: {
+                        column: {
+                            dataLabels: {
+                                enabled: true,
+                                format: '{point.y}원',
+                            },
+                            pointWidth: 90,
+                        }
+                    }
+                },
+            },
+            {
+                cell: 'attract-arpu-top-device',
+                type: 'Highcharts',
+                title: '유치ARPU 상위 단말',
+                chartOptions: {
+                    chart: {
+                        type: 'bar',
+                        width: 390, // Width of the column chart
+                    },
+                    xAxis: {
+                        labels: {
+                            enabled: true,
+                        },
+                        categories: ['아이폰16 PRO', '아이폰16', '갤럭시Z폴드5', '갤럭시Z플립5', '갤럭시S24', '갤럭시S24+',]
+                        // visible: false,
+                    },
+                    yAxis: {
+                        title: {
+                            text: null,
+                        },
+                        labels: {
+                            enabled: true,
+                        },
+                        endOnTick: false,
+                        tickPositions: [0, 100000],
+                        max: 150000,
+                    },
+                    legend: {
+                        enabled: false,
+                    },
+                    series: [{
+                        name: 'average-arpu-by-group',
+                        colorByPoint: false,
+                        data: [113637, 93777, 92000, 91000, 90000, 89000]
+                    }],
+                    plotOptions: {
+                        column: {
+                            dataLabels: {
+                                enabled: true,
+                                format: '{point.y}원',
+                            },
+                            pointWidth: 90,
+                        }
+                    }
+                },
             }
         ]
     };

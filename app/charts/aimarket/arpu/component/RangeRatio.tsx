@@ -20,6 +20,8 @@ const RangeRatio: React.FC = () => {
     const chartOptions: Highcharts.Options = {
         chart: {
             type: 'pie',
+            width: 400,
+            height: 270,
         },
         accessibility: {
             point: {

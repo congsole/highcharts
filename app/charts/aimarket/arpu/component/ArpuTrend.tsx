@@ -129,6 +129,8 @@ const ArpuTrend: React.FC = () => {
             zooming: {
                 type: 'x',
             },
+            width: 400,
+            height: 270,
         },
         title: {
             text: 'ARPU Trend',
@@ -176,10 +178,10 @@ const ArpuTrend: React.FC = () => {
 
     return (
         <Row className="chart">
-        <HighchartsReact
-            highcharts={Highcharts}
-            options={chartOptions}
-        />
+            <HighchartsReact
+                highcharts={Highcharts}
+                options={chartOptions}
+            />
         </Row>
     );
 }

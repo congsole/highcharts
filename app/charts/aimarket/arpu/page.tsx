@@ -7,6 +7,7 @@ import Cell from "@app/charts/_component/Cell";
 import ArpuTrend from "@app/charts/aimarket/arpu/component/ArpuTrend";
 import AttractArpu from "@app/charts/aimarket/arpu/component/AttractArpu";
 import ArpuAnalysis from "@app/charts/aimarket/arpu/component/ArpuAnalysis";
+import VariationFactors from "@app/charts/aimarket/arpu/component/VariationFactors";
 
 
 export default function Page() {
@@ -14,14 +15,15 @@ export default function Page() {
     return (
         <>
             <div id={"container"}>
+                <Row className="report-container-title">유치ARPU</Row>
                 <Row>
-                    <Cell width="800px"><ArpuAnalysis /></Cell>
+                    <Cell><ArpuAnalysis /></Cell>
                     <Cell>
-                        <Row><ArpuTrend /></Row>
+                        <Row ><ArpuTrend /></Row>
                         <Row><AttractArpu /></Row>
                         <Row><RangeRatio /></Row>
                     </Cell>
-                    <Cell><RangeRatio /></Cell>
+                    <Cell><VariationFactors /></Cell>
                 </Row>
             </div>
         </>

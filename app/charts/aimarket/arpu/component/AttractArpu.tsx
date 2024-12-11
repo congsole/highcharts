@@ -63,6 +63,8 @@ const AttractArpu: React.FC = () => {
     const chartOptions: Highcharts.Options = {
         chart: {
             type: 'bar',
+            width: 400,
+            height: 270,
         },
         title: {
             text: '유치 ARPU',

@@ -226,7 +226,7 @@ const RbSum: React.FC = () => {
         series: [{
             name: '조직',
             type: 'treemap',
-            layoutAlgorithm: 'squarified',
+            layoutAlgorithm: "sliceAndDice",
             allowDrillToNode: true,
             animationLimit: 1000,
             dataLabels: {
@@ -238,7 +238,7 @@ const RbSum: React.FC = () => {
                     enabled: true
                 },
                 borderWidth: 3,
-                levelIsConstant: false
+                // levelIsConstant: false
             }, {
                 level: 1,
                 dataLabels: {
