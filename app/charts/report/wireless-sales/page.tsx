@@ -3,7 +3,7 @@
 import React from 'react';
 import Row from "@app/charts/_component/Row";
 import Cell from "@app/charts/_component/Cell";
-import Analysis from "../visiting-customer/component/Analysis";
+import Sales from "@app/charts/report/wireless-sales/component/Sales";
 
 
 export default function Page() {
@@ -11,10 +11,9 @@ export default function Page() {
     return (
         <>
             <div id={"container"}>
-                <Row><h2 className="highcharts-dashboards-component-title">내방고객</h2></Row>
+                <Row><h2 className="highcharts-dashboards-component-title">무선판매</h2></Row>
                 <Row>
-                    <Cell width="800px"><Analysis /></Cell>
-                    {/*<Cell width="800px"><Type /></Cell>*/}
+                    <Cell width="800px"><Sales /></Cell>
                 </Row>
             </div>
         </>
