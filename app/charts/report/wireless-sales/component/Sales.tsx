@@ -28,9 +28,15 @@ function createRandomData(number: number) {
             }
         );
     }
+    console.log("raw data created");
     return data;
 }
 
+const data = createRandomData(500);
+
+// 마지막으로 클릭된 포인트와 차트 추적 (전역 상태)
+let lastClickedPoint: Highcharts.Point | null = null;
+let lastClickedChart: Highcharts.Chart | null = null;
 
 const Sales: React.FC = () => {
     Highcharts.setOptions({
@@ -39,10 +45,15 @@ const Sales: React.FC = () => {
         }
     });
 
-    const [filterType, setFilterType] = React.useState<string>('');
-    const [filterValue, setFilterValue] = React.useState<string>('');
+    // const [filterType, setFilterType] = React.useState<string>('');
+    // const [filterValue, setFilterValue] = React.useState<string>('');
+    const [filter, setFilter] = React.useState({
+        filterType: '',
+        filterValue: '',
+        point: null,
+        chart: null,
+    });
 
-    const data = createRandomData(500);
 
     let byRegion: Map<string, number> = new Map<string, number>();
     let byDate: Map<string, number> = new Map<string, number>();
@@ -53,25 +64,24 @@ const Sales: React.FC = () => {
         cell.map(c => byCell.set(c, 0));
         date.map(d => byDate.set(d, 0));
         data.map(d => {
-            switch(filterType) {
+            switch(filter.filterType) {
                 case 'region':
-
-                    if(d.region === filterValue) {
-                        byRegion.set(d.region, byRegion.get(d.region)! + 1);
+                    byRegion.set(d.region, byRegion.get(d.region)! + 1);
+                    if(d.region === filter.filterValue) {
                         byDate.set(d.date, byDate.get(d.date)! + 1);
                         byCell.set(d.cell, byCell.get(d.cell)! + 1);
                     }
                     break;
                 case 'date':
                     byDate.set(d.date, byDate.get(d.date)! + 1);
-                    if(d.date === filterValue) {
+                    if(d.date === filter.filterValue) {
                         byRegion.set(d.region, byRegion.get(d.region)! + 1);
                         byCell.set(d.cell, byCell.get(d.cell)! + 1);
                     }
                     break;
                 case 'cell':
                     byCell.set(d.cell, byCell.get(d.cell)! + 1);
-                    if(d.cell === filterValue) {
+                    if(d.cell === filter.filterValue) {
                         byRegion.set(d.region, byRegion.get(d.region)! + 1);
                         byDate.set(d.date, byDate.get(d.date)! + 1);
                     }
@@ -85,206 +95,215 @@ const Sales: React.FC = () => {
         });
         console.log("data filtered");
     }
-    createDataNumber();
 
-    let dashboard;
     React.useEffect(() => {
+        createDataNumber();
+    }, []);
+
+    React.useEffect(() => {
+        createDataNumber();
+        const chartOptions = {
+            dataPool: {
+                connectors: [
+                    {
+                        id: 'sales-data',
+                        type: 'JSON',
+                        options: {
+                            firstRowAsNames: false,
+                            columnNames: ['지역', '날짜', '단말'],
+                            data: data,
+                        },
+                    },
+                ]
+            },
+            gui: {
+                layouts: [{
+                    rows: [
+                        {
+                            cells: [
+                                {id: 'sales-by-title'}
+                            ],
+                        },
+                        {
+                            cells: [
+                                { id: 'sales-by-region' },
+                                { id: 'sales-by-date' },
+                                { id: 'sales-by-cell' },
+                            ]
+                        },
+                    ],
+                }],
+            },
+            components: [
+                {
+                    cell: 'sales-by-title',
+                    type: 'HTML',
+                    title: '지역/일별/단말별 판매량',
+                },
+                {
+                    cell: 'sales-by-region',
+                    type: 'Highcharts',
+                    title: '지역별 판매',
+                    chartOptions: {
+                        chart: {
+                            type: 'bar',
+                            width: 400,
+                        },
+                        xAxis: {
+                            labels: {
+                                enabled: true,
+                            },
+                            categories: Array.from(byRegion.keys()),
+                        },
+                        yAxis: {
+                            title: null,
+                        },
+                        legend: {
+                            enabled: false,
+                        },
+                        tooltip: {
+                            headerFormat: '<span style="">본부 <b>{point.x}</b></span><br>',
+                            pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
+                        },
+                        series: [
+                            {
+                                name: 'region',
+                                colorByPoint: false,
+                                data: Array.from(byRegion, ([key, value]) => {
+                                    return {
+                                        name: key,
+                                        y: value,
+                                        events: {
+                                            click: function() {
+                                                setFilter({...filter, filterType: this.series.name, filterValue: this.name, point: this, chart: this.series.chart});
+                                                // console.log(this.series.name);
+                                                // console.log(this.name);
+                                            },
+                                        }
+                                    }
+                                }),
+                            }
+                        ],
+                    },
+                },
+                {
+                    cell: 'sales-by-date',
+                    type: 'Highcharts',
+                    title: '일별 판매량',
+                    chartOptions: {
+                        chart: {
+                            type: 'line',
+                            width: 400,
+                        },
+                        xAxis: {
+                            labels: {
+                                enabled: true,
+                            },
+                            categories: Array.from(byDate.keys()),
+                        },
+                        yAxis: {
+                            title: null,
+                        },
+                        legend: {
+                            enabled: false,
+                        },
+                        tooltip: {
+                            headerFormat: '<span style=""><b>{point.x}</b></span><br>',
+                            pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
+                        },
+                        series: [
+                            {
+                                name: 'date',
+                                colorByPoint: false,
+                                data: Array.from(byDate, ([key, value]) => {
+                                    return {
+                                        name: key,
+                                        y: value,
+                                        events: {
+                                            click: function() {
+                                                setFilter({...filter, filterType: this.series.name, filterValue: this.name, point: this, chart: this.series.chart});
+                                            },
+                                        }
+                                    }
+                                }),
+                            }
+                        ]
+                    },
+                },
+                {
+                    cell: 'sales-by-cell',
+                    type: 'Highcharts',
+                    title: '주요 단말별 판매',
+                    chartOptions: {
+                        chart: {
+                            type: 'bar',
+                            width: 400,
+                        },
+                        xAxis: {
+                            labels: {
+                                enabled: true,
+                            },
+                            categories: Array.from(byCell.keys()),
+                        },
+                        yAxis: {
+                            title: null,
+                        },
+                        legend: {
+                            enabled: false,
+                        },
+                        tooltip: {
+                            headerFormat: '<span style="">단말명 <b>{point.x}</b></span><br>',
+                            pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
+                        },
+                        series: [
+                            {
+                                name: 'cell',
+                                colorByPoint: false,
+                                data: Array.from(byCell, ([key, value]) => {
+                                    return {
+                                        name: key,
+                                        y: value,
+                                        events: {
+                                            click: function() {
+                                                if(lastClickedPoint && lastClickedPoint.name === this.name) {
+                                                    console.log("last clicked point === this");
+                                                    setFilter({...filter, filterType: '', filterValue: '', point: null, chart: null});
+                                                } else {
+                                                    console.log("last clicked point !== this");
+                                                    setFilter({...filter, filterType: this.series.name, filterValue: this.name, point: this, chart: this.series.chart});
+                                                }
+                                            },
+                                        }
+                                    }
+                                }),
+                            }
+                        ],
+                    },
+                },
+            ]
+        };
         // Ensure the container exists in the DOM before initializing the dashboard
         const dashboardContainer = document.getElementById('dashboard');
         if (dashboardContainer) {
             // Create the dashboard with the chart options
-            dashboard = Dashboards.board('dashboard', chartOptions);
+            const dashboard = Dashboards.board('dashboard', chartOptions);
         } else {
             console.error('Dashboard container not found in the DOM');
         }
-    }, []);
+        if(filter.chart !== null && filter.point !== null) {
+            highlightPoint(filter.chart, filter.point);
+        }
+    }, [filter]);
 
-    const chartOptions = {
-        dataPool: {
-            connectors: [
-                {
-                    id: 'sales-data',
-                    type: 'JSON',
-                    options: {
-                        firstRowAsNames: false,
-                        columnNames: ['지역', '날짜', '단말'],
-                        data: data,
-                    },
-                },
-            ]
-        },
-        gui: {
-            layouts: [{
-                rows: [
-                    {
-                        cells: [
-                            {id: 'sales-by-title'}
-                        ],
-                    },
-                    {
-                        cells: [
-                            { id: 'sales-by-region' },
-                            { id: 'sales-by-date' },
-                            { id: 'sales-by-cell' },
-                        ]
-                    },
-                ],
-            }],
-        },
-        components: [
-            {
-                cell: 'sales-by-title',
-                type: 'HTML',
-                title: '지역/일별/단말별 판매량',
-            },
-            {
-                cell: 'sales-by-region',
-                type: 'Highcharts',
-                title: '지역별 판매',
-                chartOptions: {
-                    chart: {
-                        type: 'bar',
-                        width: 400,
-                    },
-                    xAxis: {
-                        labels: {
-                            enabled: true,
-                        },
-                        categories: Array.from(byRegion.keys()),
-                    },
-                    yAxis: {
-                        title: null,
-                    },
-                    legend: {
-                        enabled: false,
-                    },
-                    tooltip: {
-                        headerFormat: '<span style="">본부 <b>{point.x}</b></span><br>',
-                        pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
-                    },
-                    series: [
-                        {
-                            name: 'region',
-                            colorByPoint: false,
-                            data: Array.from(byRegion, ([key, value]) => {
-                                return {
-                                    name: key,
-                                    y: value,
-                                    events: {
-                                        click: function() {
-                                            highlightPoint(this.series.chart, this); // 클릭된 포인트 강조
 
-                                        },
-                                    }
-                                }
-                            }),
-                        }
-                    ],
-                },
-            },
-            {
-                cell: 'sales-by-date',
-                type: 'Highcharts',
-                title: '일별 판매량',
-                chartOptions: {
-                    chart: {
-                        type: 'line',
-                        width: 400,
-                    },
-                    xAxis: {
-                        labels: {
-                            enabled: true,
-                        },
-                        categories: Array.from(byDate.keys()),
-                    },
-                    yAxis: {
-                        title: null,
-                    },
-                    legend: {
-                        enabled: false,
-                    },
-                    tooltip: {
-                        headerFormat: '<span style=""><b>{point.x}</b></span><br>',
-                        pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
-                    },
-                    series: [
-                        {
-                            name: 'date',
-                            colorByPoint: false,
-                            data: Array.from(byDate, ([key, value]) => {
-                                return {
-                                    name: key,
-                                    y: value,
-                                    events: {
-                                        click: function() {
-                                            highlightPoint(this.series.chart, this); // 클릭된 포인트 강조
-                                        },
-                                    }
-                                }
-                            }),
-                        }
-                    ]
-                },
-            },
-            {
-                cell: 'sales-by-cell',
-                type: 'Highcharts',
-                title: '주요 단말별 판매',
-                chartOptions: {
-                    chart: {
-                        type: 'bar',
-                        width: 400,
-                    },
-                    xAxis: {
-                        labels: {
-                            enabled: true,
-                        },
-                        categories: Array.from(byCell.keys()),
-                    },
-                    yAxis: {
-                        title: null,
-                    },
-                    legend: {
-                        enabled: false,
-                    },
-                    tooltip: {
-                        headerFormat: '<span style="">단말명 <b>{point.x}</b></span><br>',
-                        pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
-                    },
-                    series: [
-                        {
-                            name: 'cell',
-                            colorByPoint: false,
-                            data: Array.from(byCell, ([key, value]) => {
-                                return {
-                                    name: key,
-                                    y: value,
-                                    events: {
-                                        click: function() {
-                                            highlightPoint(this.series.chart, this); // 클릭된 포인트 강조
-                                        },
-                                    }
-                                }
-                            }),
-                        }
-                    ],
-                },
-            },
-        ]
-    };
 
-    // 마지막으로 클릭된 포인트와 차트 추적 (전역 상태)
-    let lastClickedPoint: Highcharts.Point | null = null;
-    let lastClickedChart: Highcharts.Chart | null = null;
     const highlightPoint = (chart: Highcharts.Chart, point: Highcharts.Point) => {
-        // const chart = point.series.chart;
+
         if (lastClickedPoint) {
             resetAllPoints(lastClickedChart!); // 이전 차트 원상복구
         }
         // 이미 클릭된 포인트라면 모든 포인트를 원상복구
         if (lastClickedPoint === point) {
-            setFilterType('');
-            setFilterValue('');
             resetAllPoints(chart);
             lastClickedPoint = null; // 상태 초기화
             return;
@@ -312,11 +331,8 @@ const Sales: React.FC = () => {
         lastClickedPoint = point; // 클릭된 포인트 저장
         lastClickedChart = chart;
 
-        setFilterType(point.series.name);
-        setFilterValue(point.name);
-
         chart.redraw(); // 차트 리렌더링
-        console.log("re-render");
+        console.log("re-draw clicked chart");
     };
 
     const resetAllPoints = (chart: Highcharts.Chart) => {
@@ -332,7 +348,7 @@ const Sales: React.FC = () => {
             });
         });
         chart.redraw(); // 차트 리렌더링
-        console.log("re-render");
+        console.log("resetAllPoints");
     };
 
 
