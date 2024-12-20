@@ -45,8 +45,6 @@ const Sales: React.FC = () => {
         }
     });
 
-    // const [filterType, setFilterType] = React.useState<string>('');
-    // const [filterValue, setFilterValue] = React.useState<string>('');
     const [filter, setFilter] = React.useState({
         filterType: '',
         filterValue: '',
@@ -175,9 +173,13 @@ const Sales: React.FC = () => {
                                         y: value,
                                         events: {
                                             click: function() {
-                                                setFilter({...filter, filterType: this.series.name, filterValue: this.name, point: this, chart: this.series.chart});
-                                                // console.log(this.series.name);
-                                                // console.log(this.name);
+                                                if(lastClickedPoint && lastClickedPoint.name === this.name) {
+                                                    console.log("last clicked point === this");
+                                                    setFilter({...filter, filterType: '', filterValue: '', point: null, chart: null});
+                                                } else {
+                                                    console.log("last clicked point !== this");
+                                                    setFilter({...filter, filterType: this.series.name, filterValue: this.name, point: this, chart: this.series.chart});
+                                                }
                                             },
                                         }
                                     }
@@ -221,8 +223,13 @@ const Sales: React.FC = () => {
                                         y: value,
                                         events: {
                                             click: function() {
-                                                setFilter({...filter, filterType: this.series.name, filterValue: this.name, point: this, chart: this.series.chart});
-                                            },
+                                                if(lastClickedPoint && lastClickedPoint.name === this.name) {
+                                                    console.log("last clicked point === this");
+                                                    setFilter({...filter, filterType: '', filterValue: '', point: null, chart: null});
+                                                } else {
+                                                    console.log("last clicked point !== this");
+                                                    setFilter({...filter, filterType: this.series.name, filterValue: this.name, point: this, chart: this.series.chart});
+                                                }                                            },
                                         }
                                     }
                                 }),
@@ -290,29 +297,17 @@ const Sales: React.FC = () => {
         } else {
             console.error('Dashboard container not found in the DOM');
         }
-        if(filter.chart !== null && filter.point !== null) {
-            highlightPoint(filter.chart, filter.point);
-        }
+
+        highlightPoint(filter.chart, filter.point);
+
     }, [filter]);
 
+    const highlightPoint = (chart: Highcharts.Chart | null, point: Highcharts.Point | null) => {
 
+        lastClickedPoint = point; // 클릭된 포인트 저장
+        lastClickedChart = chart;
 
-    const highlightPoint = (chart: Highcharts.Chart, point: Highcharts.Point) => {
-
-        if (lastClickedPoint) {
-            resetAllPoints(lastClickedChart!); // 이전 차트 원상복구
-        }
-        // 이미 클릭된 포인트라면 모든 포인트를 원상복구
-        if (lastClickedPoint === point) {
-            resetAllPoints(chart);
-            lastClickedPoint = null; // 상태 초기화
-            return;
-        }
-
-        // 이전 클릭된 포인트가 있다면 복구
-        if (lastClickedPoint) {
-            resetAllPoints(chart);
-        }
+        if(point === null || chart === null) return;
 
         // 현재 클릭된 포인트를 강조
         point.update({
@@ -328,31 +323,9 @@ const Sales: React.FC = () => {
             }
         });
 
-        lastClickedPoint = point; // 클릭된 포인트 저장
-        lastClickedChart = chart;
-
         chart.redraw(); // 차트 리렌더링
         console.log("re-draw clicked chart");
     };
-
-    const resetAllPoints = (chart: Highcharts.Chart) => {
-        // 모든 포인트를 초기 상태로 복구
-        chart.series.forEach(series => {
-            series.data.forEach(point => {
-                point.update({
-                    color: null, // 기본 색상
-                    borderWidth: 0,
-                    borderColor: null,
-                    opacity: 1, // 투명도 복구
-                }, false);
-            });
-        });
-        chart.redraw(); // 차트 리렌더링
-        console.log("resetAllPoints");
-    };
-
-
-
 
 
     return (
