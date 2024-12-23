@@ -34,9 +34,8 @@ function createRandomData(number: number) {
 
 const data = createRandomData(500);
 
-// 마지막으로 클릭된 포인트와 차트 추적 (전역 상태)
+// 마지막으로 클릭된 포인트와 차트 추적
 let lastClickedPoint: Highcharts.Point | null = null;
-let lastClickedChart: Highcharts.Chart | null = null;
 const charts: Map<string, Highcharts.Chart> = new Map<string, Highcharts.Chart>();
 
 const Sales: React.FC = () => {
@@ -90,11 +89,11 @@ const Sales: React.FC = () => {
                     break;
             }
         });
-        sortMapByValueDescTopN(byRegion);
-        sortMapByValueDescTopN(byCell, true);
+        sortMapByValueDesc(byRegion);
+        sortMapByValueDesc(byCell, true);
         console.log("data filtered");
     }
-    function sortMapByValueDescTopN(map: Map<string, Array<number>>, getPercent = false) {
+    function sortMapByValueDesc(map: Map<string, Array<number>>, getPercent = false) {
         const mapArray = Array.from(map);
         const sortedArray = mapArray.sort((a,b) => - a[1][0] + b[1][0]);
         if(getPercent) {
@@ -371,13 +370,10 @@ const Sales: React.FC = () => {
     }, [filter]);
 
     const highlightPoint = (filterType: string, filterValue: string) => {
-
-        let chart, point;
-        lastClickedChart = chart = charts.get(filterType) ? charts.get(filterType)! : null;
-        lastClickedPoint = point = chart ? chart.series[0].data.find(p => p.name === filterValue)! : null; // 클릭된 포인트 저장
+        const chart = charts.get(filterType) ? charts.get(filterType)! : null;
+        const point = lastClickedPoint = chart ? chart.series[0].data.find(p => p.name === filterValue)! : null; // 클릭된 포인트 저장
 
         if (!chart || !point) return;
-
 
         // 나머지 포인트를 흐리게 처리
         chart.series[0].data.forEach(p => {
@@ -414,9 +410,8 @@ const Sales: React.FC = () => {
         // 현재 클릭된 포인트를 강조
         point.update({
             color: '#1162b2', // 강조 색상
-            opacity: 1, // 흐리게 처리
+            opacity: 1,
         }, false);
-
 
         chart.redraw(); // 차트 리렌더링
     };
