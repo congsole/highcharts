@@ -342,10 +342,6 @@ const Sales: React.FC = () => {
 
         if (!chart || !point) return;
 
-        // 현재 클릭된 포인트를 강조
-        point.update({
-            color: '#1162b2', // 강조 색상
-        }, false);
 
         // 나머지 포인트를 흐리게 처리
         chart.series[0].data.forEach(p => {
@@ -371,7 +367,20 @@ const Sales: React.FC = () => {
                     style: { color: '#1162b2' }
                 }
             });
+            // 클릭한 포인트가 포함된 라인의 색 변경
+            chart.series[0].update(
+                {
+                    opacity: 0.3, // 흐리게 처리
+                },
+                false // 리렌더링 방지
+            );
         }
+        // 현재 클릭된 포인트를 강조
+        point.update({
+            color: '#1162b2', // 강조 색상
+            opacity: 1, // 흐리게 처리
+        }, false);
+
 
         chart.redraw(); // 차트 리렌더링
     };
