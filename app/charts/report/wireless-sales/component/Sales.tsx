@@ -37,6 +37,7 @@ const data = createRandomData(500);
 // 마지막으로 클릭된 포인트와 차트 추적 (전역 상태)
 let lastClickedPoint: Highcharts.Point | null = null;
 let lastClickedChart: Highcharts.Chart | null = null;
+const charts: Map<string, Highcharts.Chart> = new Map<string, Highcharts.Chart>();
 
 const Sales: React.FC = () => {
     Highcharts.setOptions({
@@ -48,14 +49,12 @@ const Sales: React.FC = () => {
     const [filter, setFilter] = React.useState({
         filterType: '',
         filterValue: '',
-        point: null,
-        chart: null,
     });
 
 
-    let byRegion: Map<string, number> = new Map<string, number>();
-    let byDate: Map<string, number> = new Map<string, number>();
-    let byCell: Map<string, number> = new Map<string, number>();
+    const byRegion: Map<string, number> = new Map<string, number>();
+    const byDate: Map<string, number> = new Map<string, number>();
+    const byCell: Map<string, number> = new Map<string, number>();
 
     function createDataNumber() {
         region.map(r => byRegion.set(r, 0));
@@ -146,6 +145,11 @@ const Sales: React.FC = () => {
                         chart: {
                             type: 'bar',
                             width: 400,
+                            events: {
+                                load: function() {
+                                    charts.set(this.series[0].name, this);
+                                }
+                            }
                         },
                         xAxis: {
                             labels: {
@@ -175,10 +179,10 @@ const Sales: React.FC = () => {
                                             click: function() {
                                                 if(lastClickedPoint && lastClickedPoint.name === this.name) {
                                                     console.log("last clicked point === this");
-                                                    setFilter({...filter, filterType: '', filterValue: '', point: null, chart: null});
+                                                    setFilter({...filter, filterType: '', filterValue: ''});
                                                 } else {
                                                     console.log("last clicked point !== this");
-                                                    setFilter({...filter, filterType: this.series.name, filterValue: this.name, point: this, chart: this.series.chart});
+                                                    setFilter({...filter, filterType: this.series.name, filterValue: this.name});
                                                 }
                                             },
                                         }
@@ -196,8 +200,17 @@ const Sales: React.FC = () => {
                         chart: {
                             type: 'line',
                             width: 400,
+                            zooming: {
+                                type: 'x',
+                            },
+                            events: {
+                                load: function() {
+                                    charts.set(this.series[0].name, this);
+                                }
+                            }
                         },
                         xAxis: {
+                            type: 'datetime',
                             labels: {
                                 enabled: true,
                             },
@@ -210,8 +223,21 @@ const Sales: React.FC = () => {
                             enabled: false,
                         },
                         tooltip: {
+                            crosshairs: true,
                             headerFormat: '<span style=""><b>{point.x}</b></span><br>',
                             pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
+                        },
+                        plotOptions: {
+                            series: {
+                                marker: {
+                                    // symbol: 'circle',
+                                    // fillColor: '#FFFFFF',
+                                    enabled: true,
+                                    radius: 2.5,
+                                    lineWidth: 1,
+                                    lineColor: null
+                                }
+                            }
                         },
                         series: [
                             {
@@ -225,11 +251,12 @@ const Sales: React.FC = () => {
                                             click: function() {
                                                 if(lastClickedPoint && lastClickedPoint.name === this.name) {
                                                     console.log("last clicked point === this");
-                                                    setFilter({...filter, filterType: '', filterValue: '', point: null, chart: null});
+                                                    setFilter({...filter, filterType: '', filterValue: ''});
                                                 } else {
                                                     console.log("last clicked point !== this");
-                                                    setFilter({...filter, filterType: this.series.name, filterValue: this.name, point: this, chart: this.series.chart});
-                                                }                                            },
+                                                    setFilter({...filter, filterType: this.series.name, filterValue: this.name});
+                                                }
+                                            },
                                         }
                                     }
                                 }),
@@ -245,6 +272,11 @@ const Sales: React.FC = () => {
                         chart: {
                             type: 'bar',
                             width: 400,
+                            events: {
+                                load: function() {
+                                    charts.set(this.series[0].name, this);
+                                }
+                            }
                         },
                         xAxis: {
                             labels: {
@@ -274,10 +306,10 @@ const Sales: React.FC = () => {
                                             click: function() {
                                                 if(lastClickedPoint && lastClickedPoint.name === this.name) {
                                                     console.log("last clicked point === this");
-                                                    setFilter({...filter, filterType: '', filterValue: '', point: null, chart: null});
+                                                    setFilter({...filter, filterType: '', filterValue: ''});
                                                 } else {
                                                     console.log("last clicked point !== this");
-                                                    setFilter({...filter, filterType: this.series.name, filterValue: this.name, point: this, chart: this.series.chart});
+                                                    setFilter({...filter, filterType: this.series.name, filterValue: this.name});
                                                 }
                                             },
                                         }
@@ -294,20 +326,21 @@ const Sales: React.FC = () => {
         if (dashboardContainer) {
             // Create the dashboard with the chart options
             const dashboard = Dashboards.board('dashboard', chartOptions);
+            setTimeout(() => {
+                highlightPoint(filter.filterType, filter.filterValue);
+            },0);
         } else {
             console.error('Dashboard container not found in the DOM');
         }
-
-        highlightPoint(filter.chart, filter.point);
-
     }, [filter]);
 
-    const highlightPoint = (chart: Highcharts.Chart | null, point: Highcharts.Point | null) => {
+    const highlightPoint = (filterType: string, filterValue: string) => {
 
-        lastClickedPoint = point; // 클릭된 포인트 저장
-        lastClickedChart = chart;
+        let chart, point;
+        lastClickedChart = chart = charts.get(filterType) ? charts.get(filterType)! : null;
+        lastClickedPoint = point = chart ? chart.series[0].data.find(p => p.name === filterValue)! : null; // 클릭된 포인트 저장
 
-        if(point === null || chart === null) return;
+        if (!chart || !point) return;
 
         // 현재 클릭된 포인트를 강조
         point.update({
@@ -323,10 +356,25 @@ const Sales: React.FC = () => {
             }
         });
 
-        chart.redraw(); // 차트 리렌더링
-        console.log("re-draw clicked chart");
-    };
+        if(filter.filterType === 'date') {
+            chart.xAxis[0].addPlotLine({
+                value: point.x,
+                color: '#1162b2',
+                width: 2,
+                id: 'clicked-point-line',
+                zIndex: 5,
+                dashStyle: 'Dash',
+                label: { // 레이블 추가 (옵션)
+                    text: `Date: ${point.name}`,
+                    align: 'right',
+                    verticalAlign: 'middle',
+                    style: { color: '#1162b2' }
+                }
+            });
+        }
 
+        chart.redraw(); // 차트 리렌더링
+    };
 
     return (
         <Cell id="dashboard" className="chart" />
