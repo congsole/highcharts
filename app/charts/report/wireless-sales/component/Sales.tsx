@@ -52,45 +52,60 @@ const Sales: React.FC = () => {
     });
 
 
-    const byRegion: Map<string, number> = new Map<string, number>();
-    const byDate: Map<string, number> = new Map<string, number>();
-    const byCell: Map<string, number> = new Map<string, number>();
+    const byRegion: Map<string, Array<number>> = new Map<string, Array<number>>();
+    const byDate: Map<string, Array<number>> = new Map<string, Array<number>>();
+    const byCell: Map<string, Array<number>> = new Map<string, Array<number>>(); // key: 기기이름, value: [건수, 비중]
 
     function createDataNumber() {
-        region.map(r => byRegion.set(r, 0));
-        cell.map(c => byCell.set(c, 0));
-        date.map(d => byDate.set(d, 0));
+        region.map(r => byRegion.set(r, [0, 0]));
+        cell.map(c => byCell.set(c, [0, 0]));
+        date.map(d => byDate.set(d, [0, 0]));
         data.map(d => {
             switch(filter.filterType) {
                 case 'region':
-                    byRegion.set(d.region, byRegion.get(d.region)! + 1);
+                    byRegion.set(d.region, [byRegion.get(d.region)![0] + 1, byRegion.get(d.region)![1]]);
                     if(d.region === filter.filterValue) {
-                        byDate.set(d.date, byDate.get(d.date)! + 1);
-                        byCell.set(d.cell, byCell.get(d.cell)! + 1);
+                        byDate.set(d.date, [byDate.get(d.date)![0] + 1, byDate.get(d.date)![1]]);
+                        byCell.set(d.cell, [byCell.get(d.cell)![0] + 1, byCell.get(d.cell)![1]]);
                     }
                     break;
                 case 'date':
-                    byDate.set(d.date, byDate.get(d.date)! + 1);
+                    byDate.set(d.date, [byDate.get(d.date)![0] + 1, byDate.get(d.date)![1]]);
                     if(d.date === filter.filterValue) {
-                        byRegion.set(d.region, byRegion.get(d.region)! + 1);
-                        byCell.set(d.cell, byCell.get(d.cell)! + 1);
+                        byRegion.set(d.region, [byRegion.get(d.region)![0] + 1, byRegion.get(d.region)![1]]);
+                        byCell.set(d.cell, [byCell.get(d.cell)![0] + 1, byCell.get(d.cell)![1]]);
                     }
                     break;
                 case 'cell':
-                    byCell.set(d.cell, byCell.get(d.cell)! + 1);
+                    byCell.set(d.cell, [byCell.get(d.cell)![0] + 1, byCell.get(d.cell)![1]]);
                     if(d.cell === filter.filterValue) {
-                        byRegion.set(d.region, byRegion.get(d.region)! + 1);
-                        byDate.set(d.date, byDate.get(d.date)! + 1);
+                        byRegion.set(d.region, [byRegion.get(d.region)![0] + 1, byRegion.get(d.region)![1]]);
+                        byDate.set(d.date, [byDate.get(d.date)![0] + 1, byDate.get(d.date)![1]]);
                     }
                     break;
                 default:
-                    byRegion.set(d.region, byRegion.get(d.region)! + 1);
-                    byDate.set(d.date, byDate.get(d.date)! + 1);
-                    byCell.set(d.cell, byCell.get(d.cell)! + 1);
+                    byRegion.set(d.region, [byRegion.get(d.region)![0] + 1, byRegion.get(d.region)![1]]);
+                    byDate.set(d.date, [byDate.get(d.date)![0] + 1, byDate.get(d.date)![1]]);
+                    byCell.set(d.cell, [byCell.get(d.cell)![0] + 1, byCell.get(d.cell)![1]]);
                     break;
             }
         });
+        sortMapByValueDescTopN(byRegion);
+        sortMapByValueDescTopN(byCell, true);
         console.log("data filtered");
+    }
+    function sortMapByValueDescTopN(map: Map<string, Array<number>>, getPercent = false) {
+        const mapArray = Array.from(map);
+        const sortedArray = mapArray.sort((a,b) => - a[1][0] + b[1][0]);
+        if(getPercent) {
+            let sum = 0;
+            sortedArray.map(point => sum += point[1][0]);
+            sortedArray.map(point => point[1][1] = point[1][0]/sum*100);
+        }
+        map.clear();
+        for(const [key, value] of sortedArray) {
+            map.set(key, value);
+        }
     }
 
     React.useEffect(() => {
@@ -167,6 +182,17 @@ const Sales: React.FC = () => {
                             headerFormat: '<span style="">본부 <b>{point.x}</b></span><br>',
                             pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
                         },
+                        plotOptions: {
+                            bar: {
+                                dataLabels: {
+                                    enabled: true,
+                                    distance: -10,
+                                    formatter: function () {
+                                        return `${this.point.y}건`;
+                                    }
+                                }
+                            }
+                        },
                         series: [
                             {
                                 name: 'region',
@@ -174,7 +200,7 @@ const Sales: React.FC = () => {
                                 data: Array.from(byRegion, ([key, value]) => {
                                     return {
                                         name: key,
-                                        y: value,
+                                        y: value[0],
                                         events: {
                                             click: function() {
                                                 if(lastClickedPoint && lastClickedPoint.name === this.name) {
@@ -230,8 +256,6 @@ const Sales: React.FC = () => {
                         plotOptions: {
                             series: {
                                 marker: {
-                                    // symbol: 'circle',
-                                    // fillColor: '#FFFFFF',
                                     enabled: true,
                                     radius: 2.5,
                                     lineWidth: 1,
@@ -246,7 +270,7 @@ const Sales: React.FC = () => {
                                 data: Array.from(byDate, ([key, value]) => {
                                     return {
                                         name: key,
-                                        y: value,
+                                        y: value[0],
                                         events: {
                                             click: function() {
                                                 if(lastClickedPoint && lastClickedPoint.name === this.name) {
@@ -294,14 +318,26 @@ const Sales: React.FC = () => {
                             headerFormat: '<span style="">단말명 <b>{point.x}</b></span><br>',
                             pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
                         },
+                        plotOptions: {
+                            bar: {
+                                dataLabels: {
+                                    enabled: true,
+                                    distance: -10,
+                                    formatter: function () {
+                                        return `${this.point.y}건      (${this.point.p?.toFixed(2)}%)`; // 퍼센트 값만 표시
+                                    }
+                                }
+                            }
+                        },
                         series: [
                             {
                                 name: 'cell',
                                 colorByPoint: false,
-                                data: Array.from(byCell, ([key, value]) => {
+                                data: Array.from(byCell).slice(0, 5).map(([key, value]) => {
                                     return {
                                         name: key,
-                                        y: value,
+                                        y: value[0],
+                                        p: value[1],
                                         events: {
                                             click: function() {
                                                 if(lastClickedPoint && lastClickedPoint.name === this.name) {
