@@ -13,32 +13,18 @@ Dashboards.DataGridPlugin.custom.connectDataGrid(DataGrid);
 Dashboards.PluginHandler.addPlugin(Dashboards.HighchartsPlugin);
 Dashboards.PluginHandler.addPlugin(Dashboards.DataGridPlugin);
 
-const region = ['수도권', 'PS&M', '제휴마케팅본부', '기업사업본부', '부산', 'MNO AI마케팅', '서부', '대구', '중부', '제주'];
-const date = ['2024-12-01', '2024-12-02', '2024-12-03', '2024-12-04', '2024-12-05', '2024-12-06', '2024-12-07', '2024-12-08', '2024-12-09', '2024-12-10', '2024-12-11', '2024-12-12', '2024-12-13', '2024-12-14', '2024-12-15',];
-const cell = ['갤럭시 WIDE7', '갤럭시 S24', '아이폰16 PRO', '갤럭시 S24 울트라', '갤럭시퀀텀5', '아이폰15', '아이폰15 PRO', '아이폰16 PRO MAX', '갤럭시 A15', '갤럭시 A05', '갤럭시 A35', '아이폰14'];
-
-function createRandomData(number: number) {
-    const data = [];
-    for (let i = 0; i < number; i++) {
-        data.push(
-            {
-                region: region[Math.floor(Math.random() * region.length)],
-                date: date[Math.floor(Math.random() * date.length)],
-                cell: cell[Math.floor(Math.random() * cell.length)],
-            }
-        );
-    }
-    console.log("raw data created");
-    return data;
+interface IProps {
+    data: { channel: string; joinType: string; terminalType: string; region: string; date: string; cell: string; discountType: string | null; MNPbyBusiness: string | null; }[];
+    region: string[];
+    date: string[];
+    cell: string[];
 }
 
-const data = createRandomData(500);
-
-// 마지막으로 클릭된 포인트와 차트 추적
+// 마지막으로 클릭된 포인트 추적
 let lastClickedPoint: Highcharts.Point | null = null;
 const charts: Map<string, Highcharts.Chart> = new Map<string, Highcharts.Chart>();
 
-const Sales: React.FC = () => {
+const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
     Highcharts.setOptions({
         chart: {
             styledMode: false
@@ -49,7 +35,6 @@ const Sales: React.FC = () => {
         filterType: '',
         filterValue: '',
     });
-
 
     const byRegion: Map<string, Array<number>> = new Map<string, Array<number>>();
     const byDate: Map<string, Array<number>> = new Map<string, Array<number>>();
@@ -106,10 +91,6 @@ const Sales: React.FC = () => {
             map.set(key, value);
         }
     }
-
-    React.useEffect(() => {
-        createDataNumber();
-    }, []);
 
     React.useEffect(() => {
         createDataNumber();
@@ -186,7 +167,7 @@ const Sales: React.FC = () => {
                                 dataLabels: {
                                     enabled: true,
                                     distance: -10,
-                                    formatter: function () {
+                                    formatter: function (): string {
                                         return `${this.point.y}건`;
                                     }
                                 }
@@ -367,7 +348,7 @@ const Sales: React.FC = () => {
         } else {
             console.error('Dashboard container not found in the DOM');
         }
-    }, [filter]);
+    }, [data, filter]);
 
     const highlightPoint = (filterType: string, filterValue: string) => {
         const chart = charts.get(filterType) ? charts.get(filterType)! : null;
