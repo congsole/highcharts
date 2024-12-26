@@ -39,29 +39,34 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
     const byRegion: Map<string, Array<number>> = new Map<string, Array<number>>();
     const byDate: Map<string, Array<number>> = new Map<string, Array<number>>();
     const byCell: Map<string, Array<number>> = new Map<string, Array<number>>(); // key: 기기이름, value: [건수, 비중]
+    const byCellFiltered: Map<string, Array<number>> = new Map<string, Array<number>>();
 
     function createDataNumber() {
         region.map(r => byRegion.set(r, [0, 0]));
-        cell.map(c => byCell.set(c, [0, 0]));
+        cell.map(c => {
+            byCell.set(c, [0, 0]);
+            byCellFiltered.set(c, [0, 0]);
+        });
         date.map(d => byDate.set(d, [0, 0]));
         data.map(d => {
+            byCell.set(d.cell, [byCell.get(d.cell)![0] + 1, byCell.get(d.cell)![1]]);
             switch(filter.filterType) {
                 case 'region':
                     byRegion.set(d.region, [byRegion.get(d.region)![0] + 1, byRegion.get(d.region)![1]]);
                     if(d.region === filter.filterValue) {
                         byDate.set(d.date, [byDate.get(d.date)![0] + 1, byDate.get(d.date)![1]]);
-                        byCell.set(d.cell, [byCell.get(d.cell)![0] + 1, byCell.get(d.cell)![1]]);
+                        byCellFiltered.set(d.cell, [byCellFiltered.get(d.cell)![0] + 1, byCellFiltered.get(d.cell)![1]]);
                     }
                     break;
                 case 'date':
                     byDate.set(d.date, [byDate.get(d.date)![0] + 1, byDate.get(d.date)![1]]);
                     if(d.date === filter.filterValue) {
                         byRegion.set(d.region, [byRegion.get(d.region)![0] + 1, byRegion.get(d.region)![1]]);
-                        byCell.set(d.cell, [byCell.get(d.cell)![0] + 1, byCell.get(d.cell)![1]]);
+                        byCellFiltered.set(d.cell, [byCellFiltered.get(d.cell)![0] + 1, byCellFiltered.get(d.cell)![1]]);
                     }
                     break;
                 case 'cell':
-                    byCell.set(d.cell, [byCell.get(d.cell)![0] + 1, byCell.get(d.cell)![1]]);
+                    byCellFiltered.set(d.cell, [byCellFiltered.get(d.cell)![0] + 1, byCellFiltered.get(d.cell)![1]]);
                     if(d.cell === filter.filterValue) {
                         byRegion.set(d.region, [byRegion.get(d.region)![0] + 1, byRegion.get(d.region)![1]]);
                         byDate.set(d.date, [byDate.get(d.date)![0] + 1, byDate.get(d.date)![1]]);
@@ -70,12 +75,13 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                 default:
                     byRegion.set(d.region, [byRegion.get(d.region)![0] + 1, byRegion.get(d.region)![1]]);
                     byDate.set(d.date, [byDate.get(d.date)![0] + 1, byDate.get(d.date)![1]]);
-                    byCell.set(d.cell, [byCell.get(d.cell)![0] + 1, byCell.get(d.cell)![1]]);
+                    byCellFiltered.set(d.cell, [byCellFiltered.get(d.cell)![0] + 1, byCellFiltered.get(d.cell)![1]]);
                     break;
             }
         });
         sortMapByValueDesc(byRegion);
         sortMapByValueDesc(byCell, true);
+        sortMapByValueDesc(byCellFiltered, true);
         console.log("data filtered");
     }
     function sortMapByValueDesc(map: Map<string, Array<number>>, getPercent = false) {
@@ -286,7 +292,7 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                             labels: {
                                 enabled: true,
                             },
-                            categories: Array.from(byCell.keys()),
+                            categories: Array.from(byCell.keys()).slice(0, 5),
                         },
                         yAxis: {
                             title: null,
@@ -299,12 +305,17 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                             pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
                         },
                         plotOptions: {
+                            series: {
+                                stacking: 'overlap', // 막대 쌓기 활성화
+                            },
                             bar: {
                                 dataLabels: {
                                     enabled: true,
                                     distance: -10,
                                     formatter: function () {
-                                        return `${this.point.y}건      (${this.point.p?.toFixed(2)}%)`; // 퍼센트 값만 표시
+                                        if(this.series.name !== 'cell') {
+                                            return `${this.point.y}건 (${this.point.p?.toFixed(2)}%)`; // 퍼센트 값만 표시
+                                        }
                                     }
                                 }
                             }
@@ -313,10 +324,11 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                             {
                                 name: 'cell',
                                 colorByPoint: false,
+                                opacity: 0.5,
                                 data: Array.from(byCell).slice(0, 5).map(([key, value]) => {
                                     return {
                                         name: key,
-                                        y: value[0],
+                                        y: value[0] - byCellFiltered.get(key)![0],
                                         p: value[1],
                                         events: {
                                             click: function() {
@@ -331,6 +343,19 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                                         }
                                     }
                                 }),
+                            },
+                            {
+                                name: 'cell-filtered',
+                                colorByPoint: false,
+                                color: Highcharts.getOptions().colors![0], // cell-filtered 시리즈 색상 동일
+                                data: Array.from(byCell.keys()).slice(0, 5).map((key) => {
+                                    const value = byCellFiltered.get(key);
+                                    return {
+                                        name: key,
+                                        y: value ? value[0] : null,
+                                        p: value ? value[1] : null,
+                                    }
+                                })
                             }
                         ],
                     },
