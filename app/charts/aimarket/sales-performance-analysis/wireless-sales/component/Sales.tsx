@@ -66,6 +66,7 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                     }
                     break;
                 case 'cell':
+                case 'cell-filtered':
                     byCellFiltered.set(d.cell, [byCellFiltered.get(d.cell)![0] + 1, byCellFiltered.get(d.cell)![1]]);
                     if(d.cell === filter.filterValue) {
                         byRegion.set(d.region, [byRegion.get(d.region)![0] + 1, byRegion.get(d.region)![1]]);
@@ -108,7 +109,7 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                         type: 'JSON',
                         options: {
                             firstRowAsNames: false,
-                            columnNames: ['지역', '날짜', '단말'],
+                            columnNames: ['지역', '날짜', '단말',],
                             data: data,
                         },
                     },
@@ -225,6 +226,7 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                             type: 'datetime',
                             labels: {
                                 enabled: true,
+                                // step: 3,
                             },
                             categories: Array.from(byDate.keys()),
                         },
@@ -284,7 +286,7 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                             width: 400,
                             events: {
                                 load: function() {
-                                    charts.set(this.series[0].name, this);
+                                    this.series.map(s => charts.set(s.name, this));
                                 }
                             }
                         },
@@ -354,9 +356,20 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                                         name: key,
                                         y: value ? value[0] : null,
                                         p: value ? value[1] : null,
+                                        events: {
+                                            click: function() {
+                                                if(lastClickedPoint && lastClickedPoint.name === this.name) {
+                                                    console.log("last clicked point === this");
+                                                    setFilter({...filter, filterType: '', filterValue: ''});
+                                                } else {
+                                                    console.log("last clicked point !== this");
+                                                    setFilter({...filter, filterType: this.series.name, filterValue: this.name});
+                                                }
+                                            },
+                                        }
                                     }
                                 })
-                            }
+                            },
                         ],
                     },
                 },
@@ -377,18 +390,16 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
 
     const highlightPoint = (filterType: string, filterValue: string) => {
         const chart = charts.get(filterType) ? charts.get(filterType)! : null;
-        const point = lastClickedPoint = chart ? chart.series[0].data.find(p => p.name === filterValue)! : null; // 클릭된 포인트 저장
+        const point = lastClickedPoint = chart ? chart.series.find(s => s.name === filterType)!.data.find(p => p.name === filterValue)! : null; // 클릭된 포인트 저장
 
         if (!chart || !point) return;
 
         // 나머지 포인트를 흐리게 처리
-        chart.series[0].data.forEach(p => {
-            if (p !== point) {
-                p.update({
-                    opacity: 0.3, // 흐리게 처리
-                }, false);
-            }
-        });
+        chart.series.map(s => s.data.forEach(p => {
+            p.update({
+                opacity: 0.3, // 흐리게 처리
+            }, false);
+        }));
 
         if(filter.filterType === 'date') {
             chart.xAxis[0].addPlotLine({
@@ -414,10 +425,14 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
             );
         }
         // 현재 클릭된 포인트를 강조
-        point.update({
-            color: '#1162b2', // 강조 색상
-            opacity: 1,
-        }, false);
+        chart.series.map(s => s.data.map(p => {
+            if(p.name === filterValue) {
+                p.update({
+                    color: '#1162b2', // 강조 색상
+                    opacity: 1,
+                }, false)
+            }
+        }));
 
         chart.redraw(); // 차트 리렌더링
     };
