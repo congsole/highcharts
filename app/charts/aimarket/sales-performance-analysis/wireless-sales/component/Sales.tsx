@@ -243,14 +243,14 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                             crosshairs: [
                                 { // x축
                                     color: 'gray',
-                                    width: 1,
-                                    dashStyle: 'Dot'
+                                    width: 1.5,
+                                    dashStyle: 'solid'
                                 },
-                                { // y축
-                                    color: 'gray',
-                                    width: 1,
-                                    dashStyle: 'Dot'
-                                }
+                                // { // y축
+                                //     color: 'gray',
+                                //     width: 1,
+                                //     dashStyle: 'Dot'
+                                // }
                             ],
                             // headerFormat: '<span style=""><b>{point.x}</b></span><br>',
                             // pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
@@ -261,9 +261,14 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                         plotOptions: {
                             series: {
                                 marker: {
-                                    enabled: true,
+                                    enabled: false,
+                                    states: {
+                                        hover: {
+                                            enabled: true,
+                                        }
+                                    },
                                     radius: 2.5,
-                                    lineWidth: 1,
+                                    lineWidth: 2,
                                     lineColor: null
                                 }
                             }
@@ -323,10 +328,11 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                             // headerFormat: '<span style="">단말명 <b>{point.x}</b></span><br>',
                             // pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
                             formatter: function():string | boolean {
-                                if(this.series.name === 'cell') {
-                                    return false;
-                                }
-                                return `<p>단말명 <b>${this.point.name}</b><br>판매량 <b>${Highcharts.numberFormat(this.point.y, 0, '.', ',')}</b></p>`;
+                                const extraInfo =
+                                    (filter.filterType === 'region' || filter.filterType === 'date')
+                                        ? `<br>강조표시됨 <b>${Highcharts.numberFormat(byCellFiltered.get(this.point.name)![0], 0, '.', ',')}</b>`
+                                        : '';
+                                return `<p>단말명 <b>${this.point.name}</b><br>판매량 <b>${Highcharts.numberFormat(byCell.get(this.point.name)![0], 0, '.', ',')}</b>${extraInfo}</p>`;
                             }
                         },
                         plotOptions: {
