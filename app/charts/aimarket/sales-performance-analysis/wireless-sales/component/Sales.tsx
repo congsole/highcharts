@@ -166,8 +166,11 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                             enabled: false,
                         },
                         tooltip: {
-                            headerFormat: '<span style="">본부 <b>{point.x}</b></span><br>',
-                            pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
+                            // headerFormat: '<span style="">본부 <b>{point.x}</b></span><br>',
+                            // pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
+                            formatter: function():string {
+                                return `<p>본부 <b>${this.point.name}</b><br>판매량 <b>${Highcharts.numberFormat(this.point.y, 0, '.', ',')}</b></p>`;
+                            }
                         },
                         plotOptions: {
                             bar: {
@@ -175,7 +178,7 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                                     enabled: true,
                                     distance: -10,
                                     formatter: function (): string {
-                                        return `${this.point.y}건`;
+                                        return `${Highcharts.numberFormat(this.point.y, 0, '.', ',')}건`;
                                     }
                                 }
                             }
@@ -237,9 +240,23 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                             enabled: false,
                         },
                         tooltip: {
-                            crosshairs: true,
-                            headerFormat: '<span style=""><b>{point.x}</b></span><br>',
-                            pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
+                            crosshairs: [
+                                { // x축
+                                    color: 'gray',
+                                    width: 1,
+                                    dashStyle: 'Dot'
+                                },
+                                { // y축
+                                    color: 'gray',
+                                    width: 1,
+                                    dashStyle: 'Dot'
+                                }
+                            ],
+                            // headerFormat: '<span style=""><b>{point.x}</b></span><br>',
+                            // pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
+                            formatter: function():string {
+                                return `<p><b>${this.point.name}</b><br>판매량 <b>${Highcharts.numberFormat(this.point.y, 0, '.', ',')}</b></p>`;
+                            }
                         },
                         plotOptions: {
                             series: {
@@ -303,8 +320,14 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                             enabled: false,
                         },
                         tooltip: {
-                            headerFormat: '<span style="">단말명 <b>{point.x}</b></span><br>',
-                            pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
+                            // headerFormat: '<span style="">단말명 <b>{point.x}</b></span><br>',
+                            // pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
+                            formatter: function():string | boolean {
+                                if(this.series.name === 'cell') {
+                                    return false;
+                                }
+                                return `<p>단말명 <b>${this.point.name}</b><br>판매량 <b>${Highcharts.numberFormat(this.point.y, 0, '.', ',')}</b></p>`;
+                            }
                         },
                         plotOptions: {
                             series: {
@@ -316,7 +339,7 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                                     distance: -10,
                                     formatter: function () {
                                         if(this.series.name !== 'cell') {
-                                            return `${this.point.y}건 (${this.point.p?.toFixed(2)}%)`; // 퍼센트 값만 표시
+                                            return `${Highcharts.numberFormat(this.point.y, 0, '.', ',')}건 (${this.point.p?.toFixed(2)}%)`; // 퍼센트 값만 표시
                                         }
                                     }
                                 }
