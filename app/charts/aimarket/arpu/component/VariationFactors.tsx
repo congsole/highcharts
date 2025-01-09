@@ -1,21 +1,14 @@
 "use client";
 
 import React from 'react';
-import Highcharts from 'highcharts';
-import HighchartsExporting from 'highcharts/modules/exporting';
-import HighchartsMore from 'highcharts/highcharts-more';
-import Treemap from 'highcharts/modules/treemap';
-import Row from "@app/charts/_component/Row";
-import Cell from "@app/charts/_component/Cell";
+
 import DataGrid from "@highcharts/dashboards/datagrid";
 
+import Row from "@app/charts/_component/Row";
+import Cell from "@app/charts/_component/Cell";
+
+
 const VariationFactors: React.FC = () => {
-    // Highcharts More 모듈 초기화
-    if (typeof Highcharts === 'object') {
-        HighchartsMore(Highcharts);
-        HighchartsExporting(Highcharts);
-        Treemap(Highcharts);
-    }
 
     React.useEffect(() => {
         DataGrid.dataGrid('arpu-datagrid', config);
@@ -51,7 +44,7 @@ const VariationFactors: React.FC = () => {
             </Row>
             <Row>
                 <div className="highcharts-background">
-                    <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
+                    <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using Content here, content here, making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for lorem ipsum will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
                 </div>
             </Row>
         </Cell>

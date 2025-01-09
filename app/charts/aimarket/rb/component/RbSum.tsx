@@ -2,10 +2,8 @@
 
 import React from 'react';
 import Highcharts from 'highcharts';
-import HighchartsExporting from 'highcharts/modules/exporting';
 import dynamic from 'next/dynamic';
 const HighchartsReact = dynamic(() => import('highcharts-react-official'), {ssr: false});
-import HighchartsMore from 'highcharts/highcharts-more';
 import Treemap from 'highcharts/modules/treemap';
 
 interface Depth_1 {
@@ -19,11 +17,6 @@ interface Depth_2 {
     name: string;
     value: number;
     parent: string;
-}
-
-interface Model {
-    value: string;
-    key: number;
 }
 
 const depth_1: Depth_1[] = [
@@ -184,24 +177,9 @@ const depth_2: Depth_2[] = [
         value: 9813999999,
     },
 ];
-// const models: Model[] = [
-//     {
-//         value: "조직",
-//         key: 0,
-//     }, {
-//         value: "단말",
-//         key: 1,
-//     }, {
-//         value: "채널",
-//         key: 2,
-//     }
-// ]
 
 const RbSum: React.FC = () => {
-    // Highcharts More 모듈 초기화
     if (typeof Highcharts === 'object') {
-        HighchartsMore(Highcharts);
-        HighchartsExporting(Highcharts);
         Treemap(Highcharts);
     }
 
@@ -213,16 +191,6 @@ const RbSum: React.FC = () => {
             text: '유치단가 총계',
             align: 'left',
         },
-        // colorAxis: {
-        //     minColor: '#FFFFFF',
-        //     maxColor: '#000000',
-        // },
-
-        // plotOptions: {
-        //     series: {
-        //         borderColor: 'red',
-        //     }
-        // },
         series: [{
             name: '조직',
             type: 'treemap',

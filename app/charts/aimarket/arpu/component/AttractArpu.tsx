@@ -5,10 +5,10 @@ import Highcharts from 'highcharts';
 import HighchartsExporting from 'highcharts/modules/exporting';
 import dynamic from 'next/dynamic';
 const HighchartsReact = dynamic(() => import('highcharts-react-official'), {ssr: false});
-import HighchartsMore from 'highcharts/highcharts-more';
-import Treemap from 'highcharts/modules/treemap';
+
 import Cell from '@app/charts/_component/Cell';
 import Row from '@app/charts/_component/Row';
+
 import { Select } from "antd";
 
 const selectItems = [
@@ -51,11 +51,9 @@ dataMap.set('priceRange', [
 ]);
 
 const AttractArpu: React.FC = () => {
-    // Highcharts More 모듈 초기화
+
     if (typeof Highcharts === 'object') {
-        HighchartsMore(Highcharts);
         HighchartsExporting(Highcharts);
-        Treemap(Highcharts);
     }
 
     const [type, setType] = React.useState(selectItems[0].value);

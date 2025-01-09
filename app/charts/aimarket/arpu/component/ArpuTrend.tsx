@@ -2,11 +2,8 @@
 
 import React from 'react';
 import Highcharts from 'highcharts';
-import HighchartsExporting from 'highcharts/modules/exporting';
 import dynamic from 'next/dynamic';
 const HighchartsReact = dynamic(() => import('highcharts-react-official'), {ssr: false});
-import HighchartsMore from 'highcharts/highcharts-more';
-import Treemap from 'highcharts/modules/treemap';
 import Row from '@app/charts/_component/Row';
 
 interface TrendItem {
@@ -116,12 +113,6 @@ const trendData: TrendItem[] = [
 ];
 
 const ArpuTrend: React.FC = () => {
-    // Highcharts More 모듈 초기화
-    if (typeof Highcharts === 'object') {
-        HighchartsMore(Highcharts);
-        HighchartsExporting(Highcharts);
-        Treemap(Highcharts);
-    }
 
     const chartOptions: Highcharts.Options = {
         chart: {

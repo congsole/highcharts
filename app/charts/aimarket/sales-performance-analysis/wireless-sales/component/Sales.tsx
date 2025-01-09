@@ -4,14 +4,10 @@ import React from 'react';
 import Highcharts from 'highcharts';
 import Dashboards from '@highcharts/dashboards/es-modules/masters/dashboards.src';
 import '@highcharts/dashboards/es-modules/masters/modules/layout.src';
-import DataGrid from '@highcharts/dashboards/datagrid';
 import Cell from '@app/charts/_component/Cell';
 
 Dashboards.HighchartsPlugin.custom.connectHighcharts(Highcharts);
-Dashboards.DataGridPlugin.custom.connectDataGrid(DataGrid);
-
 Dashboards.PluginHandler.addPlugin(Dashboards.HighchartsPlugin);
-Dashboards.PluginHandler.addPlugin(Dashboards.DataGridPlugin);
 
 interface IProps {
     data: { channel: string; joinType: string; terminalType: string; region: string; date: string; cell: string; discountType: string | null; MNPbyBusiness: string | null; }[];
@@ -168,8 +164,35 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                         tooltip: {
                             // headerFormat: '<span style="">본부 <b>{point.x}</b></span><br>',
                             // pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
+                            useHTML: true,
                             formatter: function():string {
                                 return `<p>본부 <b>${this.point.name}</b><br>판매량 <b>${Highcharts.numberFormat(this.point.y, 0, '.', ',')}</b></p>`;
+        //                         return `<div>
+        //     <p style="font-size: 2em">서울 특별시 강북구</p>
+        //     <table class="highcharts-tooltip-table" style="border: #0a0a0a">
+        //         <thead>
+        //             <tr>
+        //                 <th style="padding: 10px">Category</th>
+        //                 <th style="padding: 10px">Value</th>
+        //             </tr>
+        //         </thead>
+        //         <tbody>
+        //             <tr>
+        //                 <td style="border: 1px solid black">${this.point.name}</td>
+        //                 <td>${Highcharts.numberFormat(this.point.y, 0, '.', ',')}</td>
+        //             </tr>
+        //             <tr>
+        //                 <td>${this.point.name}</td>
+        //                 <td>${Highcharts.numberFormat(this.point.y, 0, '.', ',')}</td>
+        //             </tr>
+        //             <tr>
+        //                 <td>${this.point.name}</td>
+        //                 <td>${Highcharts.numberFormat(this.point.y, 0, '.', ',')}</td>
+        //             </tr>
+        //         </tbody>
+        //     </table>
+        //     </div>
+        // `;
                             }
                         },
                         plotOptions: {

@@ -4,14 +4,10 @@ import React, { useEffect } from 'react';
 import Highcharts from 'highcharts';
 import Dashboards from '@highcharts/dashboards/es-modules/masters/dashboards.src';
 import '@highcharts/dashboards/es-modules/masters/modules/layout.src';
-import DataGrid from '@highcharts/dashboards/datagrid';
 import Cell from '../../../_component/Cell';
 
 Dashboards.HighchartsPlugin.custom.connectHighcharts(Highcharts);
-Dashboards.DataGridPlugin.custom.connectDataGrid(DataGrid);
-
 Dashboards.PluginHandler.addPlugin(Dashboards.HighchartsPlugin);
-Dashboards.PluginHandler.addPlugin(Dashboards.DataGridPlugin);
 
 const ageCategories = [
     '0세~9세', '10세~19세', '20세~29세', '30세~39세', '40세~49세', '50세~59세', '60세~69세', '70세 이상'
@@ -25,9 +21,9 @@ const Analysis: React.FC = () => {
 
     useEffect(() => {
         // Ensure the container exists in the DOM before initializing the dashboard
-        const dashboardContainer = document.getElementById('dashboard');
+        const dashboardContainer = document.getElementById('visiting-customer-analysis');
         if (dashboardContainer) {
-            Dashboards.board('dashboard', chartOptions);
+            Dashboards.board('visiting-customer-analysis', chartOptions);
         } else {
             console.error('Dashboard container not found in the DOM');
         }
@@ -49,11 +45,16 @@ const Analysis: React.FC = () => {
                         cells: [
                             {
                                 rows: [
-                                    { id: 'visiting-customer-number' },
-                                    { id: 'visiting-customer-number-compare' }
+                                    {
+                                        cells: [
+                                            { id: 'visiting-customer-number' },
+                                            { id: 'visiting-customer-number-compare' },
+                                        ]
+                                    }
                                 ]
                             },
-                            { id: 'visiting-customer-sex-age' },
+
+                            { id: 'visiting-customer-gender-age' },
                         ],
                     },
                     {
@@ -86,8 +87,8 @@ const Analysis: React.FC = () => {
                 title: null,
             },
             {
-                cell: 'visiting-customer-sex-age',
-                type: '',
+                cell: 'visiting-customer-gender-age',
+                type: 'Highcharts',
                 title: '내방 고객 성별/연령',
                 chart: {
                     type: 'bar'
@@ -131,7 +132,7 @@ const Analysis: React.FC = () => {
                     series: {
                         stacking: 'normal',
                     }
-                }
+                },
                 tooltip: {
                     format: '<b>{series.name}, age {point.category}</b><br/>' +
                         'Population: {(abs point.y):.2f}%'
@@ -157,7 +158,7 @@ const Analysis: React.FC = () => {
             },
             {
                 cell: 'visiting-customer-transition',
-                type: '',
+                type: 'Highcharts',
                 title: '내방 고객수 추이',
             },
             {
@@ -173,7 +174,7 @@ const Analysis: React.FC = () => {
     };
 
     return (
-        <Cell id="dashboard" className="chart" />
+        <Cell id="visiting-customer-analysis" className="chart" />
     );
 };
 

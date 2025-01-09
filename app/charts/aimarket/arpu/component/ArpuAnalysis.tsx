@@ -4,21 +4,12 @@ import React, { useEffect } from 'react';
 import Highcharts from 'highcharts';
 import Dashboards from '@highcharts/dashboards/es-modules/masters/dashboards.src';
 import '@highcharts/dashboards/es-modules/masters/modules/layout.src';
-import DataGrid from '@highcharts/dashboards/datagrid';
 import Cell from '../../../_component/Cell';
 
 Dashboards.HighchartsPlugin.custom.connectHighcharts(Highcharts);
-Dashboards.DataGridPlugin.custom.connectDataGrid(DataGrid);
-
 Dashboards.PluginHandler.addPlugin(Dashboards.HighchartsPlugin);
-Dashboards.PluginHandler.addPlugin(Dashboards.DataGridPlugin);
 
 const ArpuAnalysis: React.FC = () => {
-    Highcharts.setOptions({
-        chart: {
-            styledMode: false
-        }
-    });
 
     useEffect(() => {
         // Ensure the container exists in the DOM before initializing the dashboard

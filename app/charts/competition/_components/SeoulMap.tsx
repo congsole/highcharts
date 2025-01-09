@@ -5,8 +5,6 @@ import Highcharts from "highcharts/highmaps";
 import HighchartsExporting from 'highcharts/modules/exporting';
 import dynamic from 'next/dynamic';
 const HighchartsReact = dynamic(() => import('highcharts-react-official'), {ssr: false});
-// import seoulGeoJSON from "../../../../public/geoJSON/seoulGeo.json";
-import HighchartsMore from "highcharts/highcharts-more";
 import { getSidoGeoJson } from "@app/_service/charts/actions";
 
 interface MapData {
@@ -45,10 +43,8 @@ const mapData: MapData[] = [
 const SeoulMap: React.FC = () => {
     const [seoulGeoJSON, setSeoulGeoJSON] = React.useState(null);
 
-    // Highcharts 모듈 초기화
     React.useEffect(() => {
         if (typeof Highcharts === "object") {
-            HighchartsMore(Highcharts);
             HighchartsExporting(Highcharts);
         }
     }, []);
