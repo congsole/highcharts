@@ -5,8 +5,9 @@ import Highcharts from "highcharts/highmaps";
 import HighchartsExporting from 'highcharts/modules/exporting';
 import dynamic from 'next/dynamic';
 const HighchartsReact = dynamic(() => import('highcharts-react-official'), {ssr: false});
-import seoulGeoJSON from "../../../../public/geoJSON/seoulGeo.json";
+// import seoulGeoJSON from "../../../../public/geoJSON/seoulGeo.json";
 import HighchartsMore from "highcharts/highcharts-more";
+import { getSidoGeoJson } from "@app/_service/charts/actions";
 
 interface MapData {
     code: string;
@@ -21,7 +22,7 @@ const mapData: MapData[] = [
     { code: "11050", value: 50 }, //
     { code: "11060", value: 60 }, //
     { code: "11070", value: 70 }, //
-    { code: "11080", value: 80 }, // 
+    { code: "11080", value: 80 }, //
     { code: "11090", value: 80 }, //
     { code: "11100", value: 100 }, //
     { code: "11110", value: 15 }, //
@@ -42,10 +43,28 @@ const mapData: MapData[] = [
 ];
 
 const SeoulMap: React.FC = () => {
-    // Highcharts More 모듈 초기화
-    if (typeof Highcharts === 'object') {
-        HighchartsMore(Highcharts);
-        HighchartsExporting(Highcharts)
+    const [seoulGeoJSON, setSeoulGeoJSON] = React.useState(null);
+
+    // Highcharts 모듈 초기화
+    React.useEffect(() => {
+        if (typeof Highcharts === "object") {
+            HighchartsMore(Highcharts);
+            HighchartsExporting(Highcharts);
+        }
+    }, []);
+
+    // GeoJSON 데이터를 비동기로 가져오기
+    React.useEffect(() => {
+        const fetchGeoJSON = async () => {
+            const geoJSON = await getSidoGeoJson(11); // 서울 GeoJSON 가져오기
+            setSeoulGeoJSON(geoJSON);
+        };
+        fetchGeoJSON();
+    }, []);
+
+    // 데이터가 로드되기 전에는 로딩 표시
+    if (!seoulGeoJSON) {
+        return <div>Loading...</div>;
     }
 
     const chartOptions: Highcharts.Options = {
@@ -63,8 +82,8 @@ const SeoulMap: React.FC = () => {
         mapNavigation: {
             enabled: true,
             buttonOptions: {
-                verticalAlign: 'bottom'
-            }
+                verticalAlign: "bottom",
+            },
         },
         colorAxis: {
             min: 0,
@@ -80,8 +99,8 @@ const SeoulMap: React.FC = () => {
                 type: "map",
                 name: "서울 시군구 데이터",
                 data: mapData, // 데이터 매핑
-                mapData: seoulGeoJSON,
-                joinBy: ["code", "code"], // GeoJSON과 데이터 매핑
+                mapData: seoulGeoJSON, // 로드된 GeoJSON
+                joinBy: ["SIGUNGU_CD", "code"], // mapData 코드, data 코드 간 매핑
                 states: {
                     hover: {
                         color: "#a4edba", // 마우스 오버 색상
@@ -89,7 +108,7 @@ const SeoulMap: React.FC = () => {
                 },
                 dataLabels: {
                     enabled: true,
-                    format: "{point.properties.name}", // 시군구 이름 표시
+                    format: "{point.properties.SIGUNGU_NM}", // 시군구 이름 표시
                 },
             },
         ],
