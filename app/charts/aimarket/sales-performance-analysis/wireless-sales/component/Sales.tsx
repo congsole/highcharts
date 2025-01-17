@@ -348,6 +348,7 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                             enabled: false,
                         },
                         tooltip: {
+                            // shared: true,
                             // headerFormat: '<span style="">단말명 <b>{point.x}</b></span><br>',
                             // pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
                             formatter: function():string | boolean {
@@ -385,7 +386,7 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                                 data: Array.from(byCell).slice(0, 5).map(([key, value]) => {
                                     return {
                                         name: key,
-                                        y: value[0] - byCellFiltered.get(key)![0],
+                                        y: value[0],
                                         p: value[1],
                                         events: {
                                             click: function() {
@@ -403,6 +404,7 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                             },
                             {
                                 name: 'cell-filtered',
+                                pointPadding: 0.3,
                                 colorByPoint: false,
                                 // pointPlacement: -0.2,
                                 color: Highcharts.getOptions().colors![0], // cell-filtered 시리즈 색상 동일
