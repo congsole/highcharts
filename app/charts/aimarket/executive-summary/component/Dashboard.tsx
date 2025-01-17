@@ -50,15 +50,52 @@ export default function Dashboard(props) {
                     </div>
                     <div className="line-wrapper-row">
                         <Cell className="line" id="line-mnp-in"/>
-                        <Cell className="kpi2" id="line-mnp-kpi"/>
+                        <div className="line-wrapper">
+                            <p className="text-xs">제휴마케팅본부 / 제휴영업팀 / 특판 / MNP / 지원금약정</p>
+                            <div className="line-wrapper-row">
+                                <Cell className="kpi2" id="line-mnp-kpi1"/>
+                                <Cell className="kpi2" id="line-mnp-kpi2"/>
+                            </div>
+                            <p className="text-xs">MNO AI마케팅 / TDS온라인팀 / T world Direct / 기변 / 무약정</p>
+                            <div className="line-wrapper-row">
+                                <Cell className="kpi2" id="line-mnp-kpi3"/>
+                                <Cell className="kpi2" id="line-mnp-kpi4"/>
+                            </div>
+                        </div>
                     </div>
                     <div className="line-wrapper-row">
                         <Cell className="line" id="line-rb"/>
-                        <Cell className="kpi2" id="line-rb-kpi"/>
+                        <div className="line-wrapper">
+
+                        <p className="text-xs">제휴마케팅본부 / 제휴영업팀 / 특판 / MNP / 지원금약정</p>
+                        <div className="line-wrapper-row">
+                            <Cell className="kpi2" id="line-rb-kpi1"/>
+                            <Cell className="kpi2" id="line-rb-kpi2"/>
+                        </div>
+                        <p className="text-xs">MNO AI마케팅 / TDS온라인팀 / T world Direct / 기변 / 무약정</p>
+                        <div className="line-wrapper-row">
+                            <Cell className="kpi2" id="line-rb-kpi3"/>
+                            <Cell className="kpi2" id="line-rb-kpi4"/>
+                        </div>
+
+                        </div>
                     </div>
                     <div className="line-wrapper-row">
                         <Cell className="line" id="line-arpu"/>
-                        <Cell className="kpi2" id="line-arpu-kpi"/>
+                        <div className="line-wrapper">
+
+                        <p className="text-xs">제휴마케팅본부 / 제휴영업팀 / 특판 / MNP / 지원금약정</p>
+                        <div className="line-wrapper-row">
+                            <Cell className="kpi2" id="line-arpu-kpi1"/>
+                            <Cell className="kpi2" id="line-arpu-kpi2"/>
+                        </div>
+                        <p className="text-xs">MNO AI마케팅 / TDS온라인팀 / T world Direct / 기변 / 무약정</p>
+                        <div className="line-wrapper-row">
+                            <Cell className="kpi2" id="line-arpu-kpi3"/>
+                            <Cell className="kpi2" id="line-arpu-kpi4"/>
+                        </div>
+
+                        </div>
                     </div>
                 </div>
                 <Cell id="dashboard-col-2"/>

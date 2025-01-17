@@ -197,6 +197,7 @@ const RbSum: React.FC = () => {
             layoutAlgorithm: "sliceAndDice",
             allowDrillToNode: true,
             animationLimit: 1000,
+            borderWidth: 0,
             dataLabels: {
                 enabled: false
             },

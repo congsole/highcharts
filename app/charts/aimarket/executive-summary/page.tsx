@@ -182,28 +182,28 @@ const config = {
         {
             type: 'KPI',
             cell: 'line-handset-kpi',
-            value: [123, 456],
+            value: ['123,456'],
             title: null,
             valueFormat: '{value} 원',
         },
         {
             type: 'KPI',
             cell: 'line-handset-kpi2',
-            value: [123, 456],
+            value: ['123,456'],
             title: null,
             valueFormat: '{value} 원',
         },
         {
             type: 'KPI',
             cell: 'line-handset-kpi3',
-            value: [123, 456],
+            value: ['123,456'],
             title: null,
             valueFormat: '{value} 원',
         },
         {
             type: 'KPI',
             cell: 'line-handset-kpi4',
-            value: [123, 456],
+            value: ['123,456'],
             title: null,
             valueFormat: '{value} 원',
         },
@@ -291,11 +291,33 @@ const config = {
         },
         {
             type: 'KPI',
-            cell: 'line-mnp-kpi',
-            value: kpiData[3][1],
-            title: '유치 ARPU',
+            cell: 'line-mnp-kpi1',
+            value: ['123,456'],
+            title: null,
             valueFormat: '{value} 원',
-        },{
+        },
+        {
+            type: 'KPI',
+            cell: 'line-mnp-kpi2',
+            value: ['123,456'],
+            title: null,
+            valueFormat: '{value} 원',
+        },
+        {
+            type: 'KPI',
+            cell: 'line-mnp-kpi3',
+            value: ['123,456'],
+            title: null,
+            valueFormat: '{value} 원',
+        },
+        {
+            type: 'KPI',
+            cell: 'line-mnp-kpi4',
+            value: ['123,456'],
+            title: null,
+            valueFormat: '{value} 원',
+        },
+        {
             cell: 'line-rb',
             type: 'Highcharts',
 
@@ -309,7 +331,7 @@ const config = {
                     },
                     endOnTick: false,
                     startOnTick: false,
-                    tickPositions: []
+                    tickPositions: [20000]
                 },
 
                 xAxis: {
@@ -379,11 +401,33 @@ const config = {
         },
         {
             type: 'KPI',
-            cell: 'line-rb-kpi',
-            value: [123, 456],
-            title: '유치 ARPU',
+            cell: 'line-rb-kpi1',
+            value: ['123,456'],
+            title: null,
             valueFormat: '{value} 원',
-        },{
+        },
+        {
+            type: 'KPI',
+            cell: 'line-rb-kpi2',
+            value: ['123,456'],
+            title: null,
+            valueFormat: '{value} 원',
+        },
+        {
+            type: 'KPI',
+            cell: 'line-rb-kpi3',
+            value: ['123,456'],
+            title: null,
+            valueFormat: '{value} 원',
+        },
+        {
+            type: 'KPI',
+            cell: 'line-rb-kpi4',
+            value: ['123,456'],
+            title: null,
+            valueFormat: '{value} 원',
+        },
+        {
             cell: 'line-arpu',
             type: 'Highcharts',
 
@@ -397,7 +441,7 @@ const config = {
                     },
                     endOnTick: false,
                     startOnTick: false,
-                    tickPositions: [112000]
+                    tickPositions: [14000]
                 },
 
                 xAxis: {
@@ -467,13 +511,32 @@ const config = {
         },
         {
             type: 'KPI',
-            cell: 'line-arpu-kpi',
-            value: [123, 456],
-            title: '유치 ARPU',
+            cell: 'line-arpu-kpi1',
+            value: ['123,456'],
+            title: null,
             valueFormat: '{value} 원',
         },
-
-
+        {
+            type: 'KPI',
+            cell: 'line-arpu-kpi2',
+            value: ['123,456'],
+            title: null,
+            valueFormat: '{value} 원',
+        },
+        {
+            type: 'KPI',
+            cell: 'line-arpu-kpi3',
+            value: ['123,456'],
+            title: null,
+            valueFormat: '{value} 원',
+        },
+        {
+            type: 'KPI',
+            cell: 'line-arpu-kpi4',
+            value: ['123,456'],
+            title: null,
+            valueFormat: '{value} 원',
+        },
         {
             cell: 'dashboard-col-2',
             connector: {

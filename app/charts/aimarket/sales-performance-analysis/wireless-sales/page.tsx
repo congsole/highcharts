@@ -68,7 +68,7 @@ export default function Page() {
 
     return (
         <>
-            <div id={"container"}>
+            <div id={"container"} style={{margin: "20px"}}>
                 <Row>
                     <h2 className="highcharts-dashboards-component-title">무선판매</h2>
                     <MultiSelectFilter filterName={"채널 유형"} filterOptions={channel} selectedItems={channelFilter} setSelectedItems={setChannelFilter} />

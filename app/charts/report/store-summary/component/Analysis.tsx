@@ -92,19 +92,20 @@ const Analysis: React.FC = () => {
                 title: 'Highcharts Polar Chart',
                 chartOptions: {
                     chart: {
+                        width: 800,
                         parallelCoordinates: true,
                         parallelAxes: {
                             labels: {
                                 style: {
                                     // opacity: 0.7,
-                                    fontSize: '5px',
+                                    fontSize: '8px',
                                     // color: '#000'
                                 }
                             },
                             // gridLineWidth: 0,
                             showFirstLabel: false,
                             minPadding: 0.2,
-                            tickPixelInterval: 25,
+                            // tickPixelInterval: 10,
                             // lineWidth: 0
                         },
                         polar: true,
@@ -134,51 +135,52 @@ const Analysis: React.FC = () => {
                     yAxis: [
                         {
                             labels: {
-                                // format: '① {value}'
+                                distance: 20
                             },
                             min: 0,
-                            max: 1.05,
+                            max: 1.01,
                             tickInterval: 0.1,
+                            lineColor: 'black',
                         },
                         {
                             labels: {
-                                // format: '② {value}'
                             },
                             min: 0,
-                            max: 1.05,
+                            max: 1.01,
                             tickInterval: 0.1,
+                            lineColor: 'black',
                         },
                         {
                             labels: {
-                                // format: '{value} pm'
                             },
                             min: 0,
-                            max: 1.05,
+                            max: 1.01,
                             tickInterval: 0.1,
+                            lineColor: 'black',
                         },
                         {
                             labels: {
-                                // format: '{value} pm'
                             },
                             min: 0,
-                            max: 1.05,
+                            max: 1.01,
                             tickInterval: 0.1,
+                            lineColor: 'black',
                         },
                         {
                             labels: {
-                                // format: '{value} pm'
                             },
                             min: 0,
-                            max: 1.05,
+                            max: 1.01,
                             tickInterval: 0.1,
+                            lineColor: 'black',
                         },
                         {
                             labels: {
-                                // format: '{value} pm',
                             },
                             min: 0,
-                            max: 1.05,
+                            max: 1.01,
                             tickInterval: 0.1,
+                            lineColor: 'black',
                         },
                     ],
 
@@ -199,7 +201,7 @@ const Analysis: React.FC = () => {
                     series: [{
                         type: 'area',
                         name: 'Area',
-                        data: [0.71, 0.22, 0.93, 0.54, 0.85, 0.36]
+                        data: [1, 0.22, 0.93, 0.54, 0.85, 0.36]
                     }],
                 },
             },

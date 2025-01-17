@@ -3,16 +3,16 @@
 import React from 'react';
 import Row from "@app/charts/_component/Row";
 import Cell from "@app/charts/_component/Cell";
-import Analysis from "@app/charts/report/store-summary/component/Analysis";
+import Arpu from "@app/charts/ailab/component/Arpu";
 
 export default function Page() {
 
     return (
         <>
             <div id={"container"}>
-                <Row><h2 className="highcharts-dashboards-component-title">매장 SUMMARY</h2></Row>
+                <Row><h2 className="highcharts-dashboards-component-title"></h2></Row>
                 <Row>
-                    <Cell width="800px"><Analysis /></Cell>
+                    <Cell width="150px"><Arpu /></Cell>
                 </Row>
             </div>
         </>

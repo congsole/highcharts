@@ -65,12 +65,12 @@ body {
 
 .kpi2,
 .kpi2 .highcharts-dashboards-component-kpi-content{
-    height: 10px !important;
+    height: 25px !important;
     background-color: transparent;
 }
 
 .kpi2 .highcharts-dashboards-component-kpi {
-    height: 10px !important; /* KPI 영역의 높이를 300px로 설정 */
+    height: 100% !important;
     padding: 0.1px;
     background-color: transparent;
 }
