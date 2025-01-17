@@ -358,9 +358,12 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                                 return `<p>단말명 <b>${this.point.name}</b><br>판매량 <b>${Highcharts.numberFormat(byCell.get(this.point.name)![0], 0, '.', ',')}</b>${extraInfo}</p>`;
                             }
                         },
+
                         plotOptions: {
                             series: {
-                                stacking: 'overlap', // 막대 쌓기 활성화
+                            //     stacking: 'overlap', // 막대 쌓기 활성화
+                                grouping: false,
+                                borderWidth: 0
                             },
                             bar: {
                                 dataLabels: {
@@ -401,6 +404,7 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                             {
                                 name: 'cell-filtered',
                                 colorByPoint: false,
+                                // pointPlacement: -0.2,
                                 color: Highcharts.getOptions().colors![0], // cell-filtered 시리즈 색상 동일
                                 data: Array.from(byCell.keys()).slice(0, 5).map((key) => {
                                     const value = byCellFiltered.get(key);
