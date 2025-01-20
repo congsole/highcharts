@@ -62,8 +62,6 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                     }
                     break;
                 case 'cell':
-                case 'cell-filtered':
-                    byCellFiltered.set(d.cell, [byCellFiltered.get(d.cell)![0] + 1, byCellFiltered.get(d.cell)![1]]);
                     if(d.cell === filter.filterValue) {
                         byRegion.set(d.region, [byRegion.get(d.region)![0] + 1, byRegion.get(d.region)![1]]);
                         byDate.set(d.date, [byDate.get(d.date)![0] + 1, byDate.get(d.date)![1]]);
@@ -72,7 +70,6 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                 default:
                     byRegion.set(d.region, [byRegion.get(d.region)![0] + 1, byRegion.get(d.region)![1]]);
                     byDate.set(d.date, [byDate.get(d.date)![0] + 1, byDate.get(d.date)![1]]);
-                    byCellFiltered.set(d.cell, [byCellFiltered.get(d.cell)![0] + 1, byCellFiltered.get(d.cell)![1]]);
                     break;
             }
         });
@@ -162,37 +159,9 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                             enabled: false,
                         },
                         tooltip: {
-                            // headerFormat: '<span style="">본부 <b>{point.x}</b></span><br>',
-                            // pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
                             useHTML: true,
                             formatter: function():string {
                                 return `<p>본부 <b>${this.point.name}</b><br>판매량 <b>${Highcharts.numberFormat(this.point.y, 0, '.', ',')}</b></p>`;
-        //                         return `<div>
-        //     <p style="font-size: 2em">서울 특별시 강북구</p>
-        //     <table class="highcharts-tooltip-table" style="border: #0a0a0a">
-        //         <thead>
-        //             <tr>
-        //                 <th style="padding: 10px">Category</th>
-        //                 <th style="padding: 10px">Value</th>
-        //             </tr>
-        //         </thead>
-        //         <tbody>
-        //             <tr>
-        //                 <td style="border: 1px solid black">${this.point.name}</td>
-        //                 <td>${Highcharts.numberFormat(this.point.y, 0, '.', ',')}</td>
-        //             </tr>
-        //             <tr>
-        //                 <td>${this.point.name}</td>
-        //                 <td>${Highcharts.numberFormat(this.point.y, 0, '.', ',')}</td>
-        //             </tr>
-        //             <tr>
-        //                 <td>${this.point.name}</td>
-        //                 <td>${Highcharts.numberFormat(this.point.y, 0, '.', ',')}</td>
-        //             </tr>
-        //         </tbody>
-        //     </table>
-        //     </div>
-        // `;
                             }
                         },
                         plotOptions: {
@@ -269,14 +238,7 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                                     width: 1.5,
                                     dashStyle: 'solid'
                                 },
-                                // { // y축
-                                //     color: 'gray',
-                                //     width: 1,
-                                //     dashStyle: 'Dot'
-                                // }
                             ],
-                            // headerFormat: '<span style=""><b>{point.x}</b></span><br>',
-                            // pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
                             formatter: function():string {
                                 return `<p><b>${this.point.name}</b><br>판매량 <b>${Highcharts.numberFormat(this.point.y, 0, '.', ',')}</b></p>`;
                             }
@@ -348,15 +310,14 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                             enabled: false,
                         },
                         tooltip: {
-                            // shared: true,
-                            // headerFormat: '<span style="">단말명 <b>{point.x}</b></span><br>',
-                            // pointFormat: '<span style="">판매량 <b>{point.y}</b?></span>'
+                            shared: true,
                             formatter: function():string | boolean {
+                                const pointName = this.points[0].point.name
                                 const extraInfo =
                                     (filter.filterType === 'region' || filter.filterType === 'date')
-                                        ? `<br>강조표시됨 <b>${Highcharts.numberFormat(byCellFiltered.get(this.point.name)![0], 0, '.', ',')}</b>`
+                                        ? `<br>강조표시됨 <b>${Highcharts.numberFormat(byCellFiltered.get(pointName)![0], 0, '.', ',')}</b>`
                                         : '';
-                                return `<p>단말명 <b>${this.point.name}</b><br>판매량 <b>${Highcharts.numberFormat(byCell.get(this.point.name)![0], 0, '.', ',')}</b>${extraInfo}</p>`;
+                                return `<p>단말명 <b>${pointName}</b><br>판매량 <b>${Highcharts.numberFormat(byCell.get(pointName)![0], 0, '.', ',')}</b>${extraInfo}</p>`;
                             }
                         },
 
@@ -371,8 +332,11 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                                     enabled: true,
                                     distance: -10,
                                     formatter: function () {
-                                        if(this.series.name !== 'cell') {
-                                            return `${Highcharts.numberFormat(this.point.y, 0, '.', ',')}건 (${this.point.p?.toFixed(2)}%)`; // 퍼센트 값만 표시
+                                        const label: string = `${Highcharts.numberFormat(this.point.y, 0, '.', ',')}건 (${this.point.p?.toFixed(2)}%)`; // 퍼센트 값만 표시
+                                        if(this.series.name === 'cell' && (!filter.filterType || filter.filterType === 'cell')) {
+                                            return label;
+                                        } else if(this.series.name !== 'cell' && (filter.filterType && filter.filterType !== 'cell')) {
+                                            return label;
                                         }
                                     }
                                 }
@@ -382,7 +346,7 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                             {
                                 name: 'cell',
                                 colorByPoint: false,
-                                opacity: 0.5,
+                                opacity: (filter.filterType && filter.filterType !== 'cell') ? 0.5 : 1,
                                 data: Array.from(byCell).slice(0, 5).map(([key, value]) => {
                                     return {
                                         name: key,
@@ -404,9 +368,9 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                             },
                             {
                                 name: 'cell-filtered',
-                                pointPadding: 0.3,
+                                // pointPadding: 0.3, // 막대 좁게 그려지도록 하는 옵션.
                                 colorByPoint: false,
-                                // pointPlacement: -0.2,
+                                // pointPlacement: -0.2, // 막대를 x축 방향으로 옮겨서 그리는 옵션
                                 color: Highcharts.getOptions().colors![0], // cell-filtered 시리즈 색상 동일
                                 data: Array.from(byCell.keys()).slice(0, 5).map((key) => {
                                     const value = byCellFiltered.get(key);
@@ -414,17 +378,6 @@ const Sales: React.FC<IProps> = ({ data, region, date, cell }) => {
                                         name: key,
                                         y: value ? value[0] : null,
                                         p: value ? value[1] : null,
-                                        events: {
-                                            click: function() {
-                                                if(lastClickedPoint && lastClickedPoint.name === this.name) {
-                                                    console.log("last clicked point === this");
-                                                    setFilter({...filter, filterType: '', filterValue: ''});
-                                                } else {
-                                                    console.log("last clicked point !== this");
-                                                    setFilter({...filter, filterType: this.series.name, filterValue: this.name});
-                                                }
-                                            },
-                                        }
                                     }
                                 })
                             },
